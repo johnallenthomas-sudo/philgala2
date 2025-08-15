@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gala Check‑In → Boarding Pass QR</title>
+  <meta name="description" content="Full‑screen gala splash, then a boarding‑pass style QR you can download as PNG. All in your browser." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- QRCode.js (MIT) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root { --page-bg: #f5f2ec; }
+    canvas { image-rendering: crisp-edges; image-rendering: -webkit-optimize-contrast; }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800" id="bodyEl" style="background-color: var(--page-bg);">
+
+  <!-- ========================= SPLASH / LANDING ========================= -->
+  <section id="splashScreen" class="w-full">
+    <!-- Full-screen hero image -->
+    <div class="w-full h-screen overflow-hidden bg-black">
+      <img src="./galanamelogo.png" alt="Gala Name" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=\'w-full h-full flex items-center justify-center text-white\'>galanamelogo.png not found</div>'">
+    </div>
+    <!-- Button under the image -->
+    <div class="py-8 flex items-center justify-center bg-white">
+      <button id="startBtn" class="px-8 py-4 rounded-2xl text-lg font-semibold shadow border border-slate-300 bg-gradient-to-b from-zinc-200 to-zinc-400 hover:from-zinc-300 hover:to-zinc-500 active:to-zinc-600">Check‑In Now for the Gala</button>
+    </div>
+  </section>
+
+  <!-- ========================= MAIN APP ========================= -->
+  <section id="appMain" class="hidden">
+    <!-- Header (EDITABLE TEXT) -->
+    <header class="bg-white border-b sticky top-0 z-10">
+      <div class="max-w-5xl mx-auto px-4 py-6">
+        <!-- EDIT TITLE BELOW -->
+        <h1 class="text-2xl sm:text-3xl font-semibold">My Info → Boarding Pass QR</h1>
+        <!-- EDIT BODY PARAGRAPH BELOW -->
+        <p class="mt-2 text-sm text-slate-600">Fill this out to create a shareable boarding‑pass style card with your info embedded in a QR code. You can preview it live and download a PNG.</p>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+      <!-- Donation banner at top of main page -->
+      <section class="bg-slate-100 p-4 rounded-xl text-center">
+        <p class="text-sm text-slate-700">In lieu of gifts we ask you to consider donating to WaterAid to help Phil hit his fundraising goal ahead of the Berlin Marathon.</p>
+        <a href="https://www.justgiving.com/page/phil-reville-1" target="_blank" class="inline-block mt-3 px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-500">Donate Now</a>
+      </section>
+
+      <section class="bg-white shadow rounded-2xl p-5">
+        <h3 class="text-lg font-semibold mb-3">Enter your info</h3>
+        <form id="infoForm" class="space-y-4" onsubmit="event.preventDefault(); renderBoardingPass();">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label class="block">
+              <span class="text-sm">Full name</span>
+              <input id="fullName" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" placeholder="Jane Doe" />
+            </label>
+            <label class="block">
+              <span class="text-sm">Email</span>
+              <input id="email" type="email" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" placeholder="jane@example.com" />
+            </label>
+            <label class="block">
+              <span class="text-sm">Phone</span>
+              <input id="phone" type="tel" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" placeholder="+1 555 123 4567" />
+            </label>
+            <label class="block">
+              <span class="text-sm">Preferred Airline</span>
+              <input id="prefAirline" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" placeholder="Delta, United, etc." />
+            </label>
+            <label class="block">
+              <span class="text-sm">Current Airline Status</span>
+              <input id="status" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" placeholder="Gold, 1K, Diamond…" />
+            </label>
+            <div class="block">
+              <span class="text-sm">Do you have PreCheck?</span>
+              <div class="mt-1 flex gap-4 items-center">
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="precheck" value="Yes" class="accent-slate-700" checked>
+                  <span>Yes</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="precheck" value="No" class="accent-slate-700">
+                  <span>No</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brand settings (optional) -->
+          <details class="rounded-xl border p-4 bg-slate-50">
+            <summary class="cursor-pointer select-none font-medium">Optional: brand settings</summary>
+            <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <label class="block">
+                <span class="text-sm">Logo path (relative or absolute URL)</span>
+                <!-- EDIT: Replace with your logo file path if different -->
+                <input id="logoSrc" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" value="https://johnallenthomas-sudo.github.io/philgala/newlogo.png" />
+              </label>
+              <label class="block">
+                <span class="text-sm">Page background color</span>
+                <!-- EDIT: Change to match your logo’s background (e.g., #f5f2ec) -->
+                <input id="bgColor" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" value="#f5f2ec" />
+              </label>
+              <label class="block">
+                <span class="text-sm">Logo scale (%)</span>
+                <input id="logoScale" type="number" min="10" max="300" step="5" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" value="140" />
+              </label>
+            </div>
+          </details>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Generate / Update</button>
+            <button type="button" id="downloadPngBtn" class="px-4 py-2 rounded-xl border">Download Boarding Pass PNG</button>
+          </div>
+
+          <!-- Preview under buttons for mobile friendliness -->
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold mb-2">Boarding pass preview</h3>
+            <div class="rounded-2xl border bg-white p-4 overflow-auto">
+              <canvas id="passCanvas" class="w-full h-auto max-w-full"></canvas>
+            </div>
+          </div>
+        </form>
+      </section>
+    </main>
+  </section>
+
+  <script>
+    // ===== Splash logic =====
+    const splashEl = document.getElementById('splashScreen');
+    const appMainEl = document.getElementById('appMain');
+    const startBtn = document.getElementById('startBtn');
+    startBtn.addEventListener('click', ()=>{
+      splashEl.classList.add('hidden');
+      appMainEl.classList.remove('hidden');
+      renderBoardingPass();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Optional: allow ?start=1 to bypass splash (useful during testing)
+    if(new URLSearchParams(location.search).get('start')==='1'){
+      splashEl.classList.add('hidden');
+      appMainEl.classList.remove('hidden');
+    }
+
+    // ===== App logic =====
+    const form = document.getElementById('infoForm');
+    const downloadBtn = document.getElementById('downloadPngBtn');
+    const canvas = document.getElementById('passCanvas');
+    const bodyEl = document.getElementById('bodyEl');
+
+    const W = 1200, H = 600; // high-res canvas
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    function getValues(){
+      const fd = new FormData(form);
+      return {
+        fullName: document.getElementById('fullName').value.trim() || 'JANE DOE',
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        prefAirline: document.getElementById('prefAirline').value.trim() || '',
+        status: document.getElementById('status').value.trim() || '',
+        precheck: fd.get('precheck') || 'Yes',
+        logoSrc: document.getElementById('logoSrc').value.trim() || './newlogo.png',
+        bgColor: document.getElementById('bgColor').value.trim() || '#f5f2ec',
+        logoScale: Math.max(10, Math.min(300, parseInt(document.getElementById('logoScale').value || '140', 10)))
+      };
+    }
+
+    function buildQRPayload(v){
+      const payload = {
+        fullName: v.fullName,
+        email: v.email || undefined,
+        phone: v.phone || undefined,
+        preferredAirline: v.prefAirline || undefined,
+        currentStatus: v.status || undefined,
+        precheck: v.precheck || undefined,
+        generatedAt: new Date().toISOString()
+      };
+      return JSON.stringify(payload);
+    }
+
+    function generateQRCanvas(text, size=260){
+      return new Promise((resolve)=>{
+        const holder = document.createElement('div');
+        holder.style.position = 'absolute';
+        holder.style.left = '-9999px';
+        document.body.appendChild(holder);
+        new QRCode(holder, { text, width: size, height: size, correctLevel: QRCode.CorrectLevel.M });
+        requestAnimationFrame(()=>{
+          const c = holder.querySelector('canvas');
+          if(c){ document.body.removeChild(holder); resolve(c); return; }
+          const img = holder.querySelector('img');
+          if(img){
+            const tmp = document.createElement('canvas'); tmp.width = size; tmp.height = size;
+            const ictx = tmp.getContext('2d');
+            const im = new Image(); im.onload = ()=>{ ictx.drawImage(im,0,0,size,size); document.body.removeChild(holder); resolve(tmp); };
+            im.src = img.src;
+          } else {
+            const empty = document.createElement('canvas'); empty.width = size; empty.height = size; document.body.removeChild(holder); resolve(empty);
+          }
+        });
+      });
+    }
+
+    function roundRectPath(c, x, y, w, h, r){
+      const rr = Math.min(r, w/2, h/2);
+      c.beginPath();
+      c.moveTo(x+rr, y);
+      c.arcTo(x+w, y, x+w, y+h, rr);
+      c.arcTo(x+w, y+h, x, y+h, rr);
+      c.arcTo(x, y+h, x, y, rr);
+      c.arcTo(x, y, x+w, y, rr);
+      c.closePath();
+    }
+
+    function loadImage(src){
+      return new Promise((resolve, reject)=>{
+        const im = new Image();
+        im.crossOrigin = 'anonymous';
+        im.onload = ()=> resolve(im);
+        im.onerror = (e)=> reject(e);
+        im.src = src + (src.includes('?') ? '&' : '?') + 'v=' + Date.now(); // cache-bust
+      });
+    }
+
+    async function renderBoardingPass(){
+      const v = getValues();
+      document.documentElement.style.setProperty('--page-bg', v.bgColor);
+
+      // clear
+      ctx.clearRect(0,0,W,H);
+
+      // Card background
+      roundRectPath(ctx, 16, 16, W-32, H-32, 28);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      const pad = 40; const topY = 56;
+
+      // Logo (scaled)
+      try{
+        const img = await loadImage(v.logoSrc);
+        const baseH = 140;
+        const drawH = Math.round(baseH * (v.logoScale/100));
+        const ratio = (img.width || 1) / (img.height || 1);
+        const drawW = Math.round(drawH * ratio);
+        ctx.drawImage(img, pad, topY - 10, drawW, drawH);
+      } catch(e){
+        console.warn('Logo failed to load:', v.logoSrc, e);
+        ctx.font = '700 32px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+        ctx.fillStyle = '#0f2a3a';
+        ctx.fillText('JANE ST. AIR', pad, topY + 20);
+        ctx.font = '500 14px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('Logo failed → ' + v.logoSrc, pad, topY + 44);
+      }
+
+      // Title on right
+      ctx.font = '700 40px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+      ctx.fillStyle = '#0f2a3a';
+      ctx.textAlign = 'right';
+      ctx.fillText('BOARDING PASS', W - pad, topY + 20);
+      ctx.textAlign = 'left';
+
+      // Labels + values
+      const label = (text, x, y)=>{ ctx.font = '600 16px system-ui, -apple-system, Segoe UI, Roboto, sans-serif'; ctx.fillStyle = '#64748b'; ctx.fillText(text, x, y); };
+      const value = (text, x, y)=>{ ctx.font = '800 30px system-ui, -apple-system, Segoe UI, Roboto, sans-serif'; ctx.fillStyle = '#0f2a3a'; ctx.fillText(text, x, y); };
+
+      let x = pad, y = topY + 120;
+      label('Passenger', x, y); value((v.fullName || '').toUpperCase(), x, y + 34);
+      y += 84; label('Preferred Airline', x, y); value(v.prefAirline || '—', x, y + 34);
+      y += 72; label('Current Status', x, y); value(v.status || '—', x, y + 34);
+      y += 72; label('PreCheck', x, y); value(v.precheck, x, y + 34);
+
+      // QR block
+      const qrSize = 260;
+      const qrX = W - pad - qrSize - 8;
+      const qrY = H - pad - qrSize - 8;
+      roundRectPath(ctx, qrX-16, qrY-16, qrSize+32, qrSize+32, 18);
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fill();
+      const qrCanvas = await generateQRCanvas(buildQRPayload(v), qrSize);
+      ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
+    }
+
+    async function handleDownload(){
+      await renderBoardingPass();
+      const link = document.createElement('a');
+      link.download = 'boarding-pass.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Live updates
+    let t; form?.addEventListener('input', ()=>{ clearTimeout(t); t = setTimeout(renderBoardingPass, 200); });
+    downloadBtn?.addEventListener('click', handleDownload);
+
+    // If user bypassed splash, render once
+    if(!splashEl || appMainEl && !appMainEl.classList.contains('hidden')){
+      renderBoardingPass();
+    }
+  </script>
+</body>
+</html>
