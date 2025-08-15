@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gala Check‑In → Boarding Pass QR</title>
+  <title>Check-In for Silver Medallion Gala</title>
   <meta name="description" content="Full‑screen gala splash, then a boarding‑pass style QR you can download as PNG. All in your browser." />
 
   <!-- Tailwind -->
@@ -21,12 +21,13 @@
   <!-- ========================= SPLASH / LANDING ========================= -->
   <section id="splashScreen" class="w-full">
     <!-- Full-screen hero image -->
-    <div class="w-full h-screen overflow-hidden bg-black">
-      <img src="./galanamelogo.png" alt="Gala Name" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=\'w-full h-full flex items-center justify-center text-white\'>galanamelogo.png not found</div>'">
+    <div class="w-full h-screen flex items-center justify-center" style="height:100svh;background-color: var(--page-bg);">
+      <img src="./galanamelogo.png" alt="Gala Name" class="max-w-full max-h-full object-contain" onerror="this.outerHTML='<div class=\'w-full h-full flex items-center justify-center text-slate-600\'>galanamelogo.png not found</div>'">
+    </div>'">
     </div>
     <!-- Button under the image -->
     <div class="py-8 flex items-center justify-center bg-white">
-      <button id="startBtn" class="px-8 py-4 rounded-2xl text-lg font-semibold shadow border border-slate-300 bg-gradient-to-b from-zinc-200 to-zinc-400 hover:from-zinc-300 hover:to-zinc-500 active:to-zinc-600">Check‑In Now for the Gala</button>
+      <button id="startBtn" class="px-8 py-4 rounded-2xl text-lg font-semibold shadow border border-slate-300 bg-gradient-to-b from-zinc-200 to-zinc-400 hover:from-zinc-300 hover:to-zinc-500 active:to-zinc-600">Check In<\/button>
     </div>
   </section>
 
@@ -36,9 +37,9 @@
     <header class="bg-white border-b sticky top-0 z-10">
       <div class="max-w-5xl mx-auto px-4 py-6">
         <!-- EDIT TITLE BELOW -->
-        <h1 class="text-2xl sm:text-3xl font-semibold">My Info → Boarding Pass QR</h1>
+        <h1 class="text-2xl sm:text-3xl font-semibold">Check-In Now for Phil's Silver Medallion Gala</h1>
         <!-- EDIT BODY PARAGRAPH BELOW -->
-        <p class="mt-2 text-sm text-slate-600">Fill this out to create a shareable boarding‑pass style card with your info embedded in a QR code. You can preview it live and download a PNG.</p>
+        <p class="mt-2 text-sm text-slate-600">We are so excited to have you onboard soon! Fill out the necessary info below and save a copy of your boarding pass. You'll need to show it at check-in.</p>
       </div>
     </header>
 
