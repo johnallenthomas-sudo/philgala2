@@ -147,7 +147,8 @@
         precheck: fd.get('precheck') || 'Yes',
         logoSrc: document.getElementById('logoSrc').value.trim() || './newlogo.png',
         bgColor: document.getElementById('bgColor').value.trim() || '#f5f2ec',
-        logoScale: 300
+        logoScale: Math.max(10, Math.min(300, parseInt(document.getElementById('logoScale').value || '300', 10)))
+        // logoScale: 300
       };
     }
 
