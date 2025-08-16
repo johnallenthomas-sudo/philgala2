@@ -326,14 +326,15 @@
       ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
 
       // ===== NEW: Bottom-left corner message based on Delta status =====
-      const isVip = (v.deltaStatus && v.deltaStatus !== 'No Status');
-      const bottomMsg = isVip ? 'SPECIAL VIP LOUNGE ACCESS' : 'PEASANT STATUS';
+      if (v.deltaStatus) {
+  const isVip = (v.deltaStatus !== 'No Status');
+  const bottomMsg = isVip ? 'SPECIAL VIP LOUNGE ACCESS' : 'PEASANT STATUS';
 
-      ctx.font = '700 40px system-ui, -apple-system, Segoe UI, Roboto, sans-serif'; // same as BOARDING PASS
-      ctx.fillStyle = '#0f2a3a';
-      ctx.textAlign = 'left';
-      // Place near bottom-left inside the card padding
-      ctx.fillText(bottomMsg, pad, H - pad + 12); // +12 to visually balance baseline inside rounded card
+  ctx.font = '700 40px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+  ctx.fillStyle = '#0f2a3a';
+  ctx.textAlign = 'left';
+  ctx.fillText(bottomMsg, pad, H - pad + 12);
+}
     }
 
     async function handleDownload(){
