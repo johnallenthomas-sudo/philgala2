@@ -77,6 +77,8 @@
               <span class="text-sm">Current Airline Status</span>
               <input id="status" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" placeholder="Gold, 1K, Diamond…" />
             </label>
+
+            <!-- PreCheck -->
             <div class="block">
               <span class="text-sm">Do you have PreCheck?</span>
               <div class="mt-1 flex gap-4 items-center">
@@ -87,6 +89,37 @@
                 <label class="inline-flex items-center gap-2">
                   <input type="radio" name="precheck" value="No" class="accent-slate-700">
                   <span>No</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- NEW: Delta status (single-select) -->
+            <div class="block sm:col-span-2">
+              <span class="text-sm">What's your status on Delta Airlines?</span>
+              <div class="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="deltaStatus" value="Silver" class="accent-slate-700">
+                  <span>Silver</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="deltaStatus" value="Gold" class="accent-slate-700">
+                  <span>Gold</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="deltaStatus" value="Platinum" class="accent-slate-700">
+                  <span>Platinum</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="deltaStatus" value="Diamond" class="accent-slate-700">
+                  <span>Diamond</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="deltaStatus" value="360" class="accent-slate-700">
+                  <span>360</span>
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" name="deltaStatus" value="No Status" class="accent-slate-700" checked>
+                  <span>No Status</span>
                 </label>
               </div>
             </div>
@@ -150,8 +183,8 @@
       const logoSrcEl = document.getElementById('logoSrc');
       const bgColorEl = document.getElementById('bgColor');
 
-      const logoSrc = (logoSrcEl && logoSrcEl.value.trim()) || logoSrcDefault;
-      const bgColor = (bgColorEl && bgColorEl.value.trim()) || bgColorDefault;
+      const logoSrc = (logoSrcEl && logoSrcEl.value?.trim()) || logoSrcDefault;
+      const bgColor = (bgColorEl && bgColorEl.value?.trim()) || bgColorDefault;
 
       return {
         fullName: (document.getElementById('fullName')?.value.trim() || 'JANE DOE'),
@@ -160,6 +193,10 @@
         prefAirline: (document.getElementById('prefAirline')?.value.trim() || ''),
         status: (document.getElementById('status')?.value.trim() || ''),
         precheck: fd.get('precheck') || 'Yes',
+
+        // NEW: Delta status radio (single-select)
+        deltaStatus: fd.get('deltaStatus') || 'No Status',
+
         logoSrc,
         bgColor,
         logoScale: 300 // default brand scale per request
@@ -174,6 +211,7 @@
         preferredAirline: v.prefAirline || undefined,
         currentStatus: v.status || undefined,
         precheck: v.precheck || undefined,
+        deltaStatus: v.deltaStatus || undefined,
         generatedAt: new Date().toISOString()
       };
       return JSON.stringify(payload);
@@ -286,6 +324,16 @@
       ctx.fill();
       const qrCanvas = await generateQRCanvas(buildQRPayload(v), qrSize);
       ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
+
+      // ===== NEW: Bottom-left corner message based on Delta status =====
+      const isVip = (v.deltaStatus && v.deltaStatus !== 'No Status');
+      const bottomMsg = isVip ? 'SPECIAL VIP LOUNGE ACCESS' : 'PEASANT STATUS';
+
+      ctx.font = '700 40px system-ui, -apple-system, Segoe UI, Roboto, sans-serif'; // same as BOARDING PASS
+      ctx.fillStyle = '#0f2a3a';
+      ctx.textAlign = 'left';
+      // Place near bottom-left inside the card padding
+      ctx.fillText(bottomMsg, pad, H - pad + 12); // +12 to visually balance baseline inside rounded card
     }
 
     async function handleDownload(){
@@ -297,7 +345,9 @@
     }
 
     // Live updates
-    let t; form?.addEventListener('input', ()=>{ clearTimeout(t); t = setTimeout(renderBoardingPass, 200); });
+    let t; 
+    form?.addEventListener('input', ()=>{ clearTimeout(t); t = setTimeout(renderBoardingPass, 200); });
+    form?.addEventListener('change', ()=>{ clearTimeout(t); t = setTimeout(renderBoardingPass, 0); });
     downloadBtn?.addEventListener('click', handleDownload);
 
     // If user bypassed splash, render once
