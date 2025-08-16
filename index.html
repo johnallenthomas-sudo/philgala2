@@ -91,27 +91,6 @@
             </div>
           </div>
 
-          <!-- Brand settings (optional) -->
-          <details class="rounded-xl border p-4 bg-slate-50">
-            <summary class="cursor-pointer select-none font-medium">Optional: brand settings</summary>
-            <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <label class="block">
-                <span class="text-sm">Logo path (relative or absolute URL)</span>
-                <!-- EDIT: Replace with your logo file path if different -->
-                <input id="logoSrc" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" value="https://johnallenthomas-sudo.github.io/philgala/newlogo.png" />
-              </label>
-              <label class="block">
-                <span class="text-sm">Page background color</span>
-                <!-- EDIT: Change to match your logo’s background (e.g., #f5f2ec) -->
-                <input id="bgColor" type="text" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" value="#f5f2ec" />
-              </label>
-              <label class="block">
-                <span class="text-sm">Logo scale (%)</span>
-                <input id="logoScale" type="number" min="10" max="300" step="5" class="mt-1 w-full rounded-xl border-slate-300 focus:border-slate-500" value="140" />
-              </label>
-            </div>
-          </details>
-
           <div class="flex flex-wrap items-center gap-3">
             <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Generate / Update</button>
             <button type="button" id="downloadPngBtn" class="px-4 py-2 rounded-xl border">Download Boarding Pass PNG</button>
@@ -168,7 +147,7 @@
         precheck: fd.get('precheck') || 'Yes',
         logoSrc: document.getElementById('logoSrc').value.trim() || './newlogo.png',
         bgColor: document.getElementById('bgColor').value.trim() || '#f5f2ec',
-        logoScale: Math.max(10, Math.min(300, parseInt(document.getElementById('logoScale').value || '140', 10)))
+        logoScale: 300
       };
     }
 
